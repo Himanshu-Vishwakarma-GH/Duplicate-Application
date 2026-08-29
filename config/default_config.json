@@ -14,7 +14,8 @@
     ".app",
     ".dmg",
     ".deb",
-    ".rpm"
+    ".rpm",
+    ".lnk"
   ],
   "hash_algorithm": "sha256",
   "large_file_threshold_mb": 100,
