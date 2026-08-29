@@ -1,6 +1,6 @@
 """
 Main Window module for Duplicate Application Manager.
-Implements modern layout with sidebar navigation, stacked content views, and status bar.
+Implements modern layout with sidebar navigation, scrollable content pages, and status bar.
 """
 
 from typing import Any, Optional
@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QMessageBox,
     QPushButton,
+    QScrollArea,
     QStackedWidget,
     QStatusBar,
     QVBoxLayout,
@@ -44,7 +45,7 @@ class MainWindow(QMainWindow):
         self.current_theme = "dark"
 
         self.setWindowTitle("Duplicate Application Manager")
-        self.resize(1280, 820)
+        self.resize(1280, 800)
 
         self._init_ui()
         self._apply_theme(self.current_theme)
@@ -59,19 +60,19 @@ class MainWindow(QMainWindow):
         main_h_layout.setSpacing(0)
 
         # ---------------------------------------------------------------------
-        # Sidebar Frame (220px fixed width)
+        # Sidebar Frame (210px fixed width)
         # ---------------------------------------------------------------------
         sidebar_frame = QFrame()
         sidebar_frame.setObjectName("sidebarFrame")
         sidebar_v_layout = QVBoxLayout(sidebar_frame)
-        sidebar_v_layout.setContentsMargins(0, 20, 0, 20)
-        sidebar_v_layout.setSpacing(6)
+        sidebar_v_layout.setContentsMargins(0, 16, 0, 16)
+        sidebar_v_layout.setSpacing(4)
 
         # App Title Header
         app_title = QLabel("⬡ App Manager")
         app_title.setObjectName("sidebarHeader")
         sidebar_v_layout.addWidget(app_title)
-        sidebar_v_layout.addSpacing(10)
+        sidebar_v_layout.addSpacing(6)
 
         # Navigation Buttons
         self.nav_button_group = QButtonGroup(self)
@@ -97,7 +98,7 @@ class MainWindow(QMainWindow):
         main_h_layout.addWidget(sidebar_frame)
 
         # ---------------------------------------------------------------------
-        # Main Content Stack
+        # Main Content Stack (Wrapped in QScrollArea for absolute visibility)
         # ---------------------------------------------------------------------
         self.stacked_widget = QStackedWidget()
 
@@ -107,10 +108,10 @@ class MainWindow(QMainWindow):
         self.results_view = ResultsView(db_manager=self.db_manager)
         self.category_view = CategoryView(db_manager=self.db_manager)
 
-        self.stacked_widget.addWidget(self.dashboard_view)
-        self.stacked_widget.addWidget(self.scan_view)
-        self.stacked_widget.addWidget(self.results_view)
-        self.stacked_widget.addWidget(self.category_view)
+        self.stacked_widget.addWidget(self._make_scrollable(self.dashboard_view))
+        self.stacked_widget.addWidget(self._make_scrollable(self.scan_view))
+        self.stacked_widget.addWidget(self.results_view)  # Results manages its own tree scroll
+        self.stacked_widget.addWidget(self._make_scrollable(self.category_view))
 
         main_h_layout.addWidget(self.stacked_widget)
 
@@ -127,6 +128,14 @@ class MainWindow(QMainWindow):
         self.scan_view.scan_completed.connect(self._on_scan_completed)
         self.results_view.request_removal.connect(self._on_request_removal)
         self.results_view.request_rescan.connect(lambda: self._switch_page(1))
+
+    def _make_scrollable(self, widget: QWidget) -> QScrollArea:
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.NoFrame)
+        scroll.setStyleSheet("QScrollArea { background-color: transparent; border: none; }")
+        scroll.setWidget(widget)
+        return scroll
 
     def _create_sidebar_btn(self, text: str, page_index: int) -> QPushButton:
         btn = QPushButton(text)
@@ -165,12 +174,10 @@ class MainWindow(QMainWindow):
             self.statusbar.showMessage("Ready.")
 
     def _on_scan_completed(self):
-        # Refresh views
         self.dashboard_view.refresh_data()
         self.results_view.refresh_results()
         self.category_view.refresh_categories()
         self._update_statusbar()
-        # Switch to Results view
         self._switch_page(2)
 
     def _on_request_removal(self, file_paths: list):
@@ -190,7 +197,6 @@ class MainWindow(QMainWindow):
             for path in file_paths:
                 if remover.remove_file(path):
                     removed_count += 1
-                    # Remove from DB if exists
                     if self.db_manager:
                         app = self.db_manager.get_application_by_path(path)
                         if app:

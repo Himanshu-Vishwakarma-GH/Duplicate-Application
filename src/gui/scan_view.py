@@ -4,7 +4,7 @@ Configures scan directories, extension filters, exclusions, and runs background 
 """
 
 from typing import Any, Dict, List, Optional
-from PySide6.QtCore import QThread, Signal, Qt
+from PySide6.QtCore import QThread, Signal
 from PySide6.QtWidgets import (
     QCheckBox,
     QFileDialog,
@@ -103,11 +103,13 @@ class ScanView(QWidget):
 
     def _init_ui(self):
         main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(24, 24, 24, 24)
-        main_layout.setSpacing(20)
+        main_layout.setContentsMargins(20, 16, 20, 20)
+        main_layout.setSpacing(14)
 
         # Header Title
         header_v = QVBoxLayout()
+        header_v.setSpacing(2)
+
         header_title = QLabel("Scan Configuration")
         header_title.setObjectName("sectionTitle")
         header_v.addWidget(header_title)
@@ -121,13 +123,15 @@ class ScanView(QWidget):
         dirs_card = QFrame()
         dirs_card.setObjectName("cardFrame")
         dirs_v = QVBoxLayout(dirs_card)
+        dirs_v.setContentsMargins(14, 14, 14, 14)
+        dirs_v.setSpacing(8)
 
         dirs_header = QLabel("Scan Directories")
-        dirs_header.setStyleSheet("font-size: 15px; font-weight: 700;")
+        dirs_header.setStyleSheet("font-size: 14px; font-weight: 700;")
         dirs_v.addWidget(dirs_header)
 
         self.dirs_list = QListWidget()
-        self.dirs_list.setMaximumHeight(140)
+        self.dirs_list.setFixedHeight(85)
         dirs_v.addWidget(self.dirs_list)
 
         dirs_btn_layout = QHBoxLayout()
@@ -147,10 +151,11 @@ class ScanView(QWidget):
         filter_card = QFrame()
         filter_card.setObjectName("cardFrame")
         filter_layout = QFormLayout(filter_card)
-        filter_layout.setSpacing(14)
+        filter_layout.setContentsMargins(14, 14, 14, 14)
+        filter_layout.setSpacing(10)
 
         filter_header = QLabel("File Filters & Exclusions")
-        filter_header.setStyleSheet("font-size: 15px; font-weight: 700;")
+        filter_header.setStyleSheet("font-size: 14px; font-weight: 700;")
         filter_layout.addRow(filter_header)
 
         self.ext_input = QLineEdit()
@@ -167,10 +172,11 @@ class ScanView(QWidget):
         options_card = QFrame()
         options_card.setObjectName("cardFrame")
         options_v = QVBoxLayout(options_card)
-        options_v.setSpacing(10)
+        options_v.setContentsMargins(14, 14, 14, 14)
+        options_v.setSpacing(8)
 
         opts_header = QLabel("Scan Options")
-        opts_header.setStyleSheet("font-size: 15px; font-weight: 700;")
+        opts_header.setStyleSheet("font-size: 14px; font-weight: 700;")
         options_v.addWidget(opts_header)
 
         self.chk_cache = QCheckBox("Use cached hashes for faster re-scans")
@@ -187,30 +193,31 @@ class ScanView(QWidget):
 
         main_layout.addWidget(options_card)
 
-        # Progress & Control Section
+        # Progress & Control Section (Always Visible)
         control_card = QFrame()
         control_card.setObjectName("cardFrame")
         control_v = QVBoxLayout(control_card)
+        control_v.setContentsMargins(14, 14, 14, 14)
+        control_v.setSpacing(8)
 
         self.progress_bar = QProgressBar()
         self.progress_bar.setValue(0)
-        self.progress_bar.setFixedHeight(24)
+        self.progress_bar.setFixedHeight(22)
         control_v.addWidget(self.progress_bar)
 
+        ctrl_bottom_h = QHBoxLayout()
         self.status_label = QLabel("Ready to scan.")
         self.status_label.setStyleSheet("color: #8A94A6; font-size: 12px;")
-        control_v.addWidget(self.status_label)
-
-        btn_h = QHBoxLayout()
-        btn_h.addStretch()
+        ctrl_bottom_h.addWidget(self.status_label)
+        ctrl_bottom_h.addStretch()
 
         self.start_scan_btn = QPushButton(f"{ICON_SCAN}  Start Scan Now")
         self.start_scan_btn.setObjectName("primaryBtn")
-        self.start_scan_btn.setFixedHeight(44)
+        self.start_scan_btn.setFixedHeight(38)
         self.start_scan_btn.clicked.connect(self._start_scan)
-        btn_h.addWidget(self.start_scan_btn)
+        ctrl_bottom_h.addWidget(self.start_scan_btn)
 
-        control_v.addLayout(btn_h)
+        control_v.addLayout(ctrl_bottom_h)
         main_layout.addWidget(control_card)
 
     def _load_config_values(self):
