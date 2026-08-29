@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "scan_directories": [
+    "C:\\Program Files",
+    "C:\\Program Files (x86)",
+    "D:\\Applications",
+    "D:/Code"
+  ],
+  "excluded_directories": [
+    "node_modules",
+    ".git",
+    "__pycache__"
+  ],
+  "file_extensions": [
+    ".exe",
+    ".msi",
+    ".app",
+    ".dmg",
+    ".deb",
+    ".rpm"
+  ],
+  "hash_algorithm": "sha256",
+  "large_file_threshold_mb": 100,
+  "database_path": "data/app_manager.db",
+  "log_level": "INFO",
+  "theme": "dark"
+}

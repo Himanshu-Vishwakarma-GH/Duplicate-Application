@@ -1,0 +1,157 @@
+{
+  "version": "1.0.0",
+  "categories": [
+    {
+      "name": "Development Tools",
+      "description": "Programming IDEs, SDKs, and development utilities",
+      "priority": 1,
+      "rules": [
+        {
+          "type": "path_contains",
+          "value": "dev",
+          "case_sensitive": false
+        },
+        {
+          "type": "path_contains",
+          "value": "development",
+          "case_sensitive": false
+        },
+        {
+          "type": "path_contains",
+          "value": "sdk",
+          "case_sensitive": false
+        },
+        {
+          "type": "path_contains",
+          "value": "ide",
+          "case_sensitive": false
+        },
+        {
+          "type": "extension",
+          "values": [
+            ".py",
+            ".js",
+            ".java",
+            ".cpp"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Games",
+      "description": "Gaming applications and platforms",
+      "priority": 2,
+      "rules": [
+        {
+          "type": "path_contains",
+          "value": "games",
+          "case_sensitive": false
+        },
+        {
+          "type": "path_contains",
+          "value": "steam",
+          "case_sensitive": false
+        },
+        {
+          "type": "path_contains",
+          "value": "epic",
+          "case_sensitive": false
+        },
+        {
+          "type": "path_contains",
+          "value": "gaming",
+          "case_sensitive": false
+        }
+      ]
+    },
+    {
+      "name": "Productivity",
+      "description": "Office suites, document editors, and productivity tools",
+      "priority": 3,
+      "rules": [
+        {
+          "type": "path_contains",
+          "value": "office",
+          "case_sensitive": false
+        },
+        {
+          "type": "path_contains",
+          "value": "microsoft",
+          "case_sensitive": false
+        },
+        {
+          "type": "path_contains",
+          "value": "productivity",
+          "case_sensitive": false
+        },
+        {
+          "type": "extension",
+          "values": [
+            ".docx",
+            ".xlsx",
+            ".pptx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Utilities",
+      "description": "System utilities and helper tools",
+      "priority": 4,
+      "rules": [
+        {
+          "type": "path_contains",
+          "value": "tools",
+          "case_sensitive": false
+        },
+        {
+          "type": "path_contains",
+          "value": "utilities",
+          "case_sensitive": false
+        },
+        {
+          "type": "path_contains",
+          "value": "system",
+          "case_sensitive": false
+        }
+      ]
+    },
+    {
+      "name": "Media",
+      "description": "Audio, video, and image processing applications",
+      "priority": 5,
+      "rules": [
+        {
+          "type": "path_contains",
+          "value": "media",
+          "case_sensitive": false
+        },
+        {
+          "type": "path_contains",
+          "value": "video",
+          "case_sensitive": false
+        },
+        {
+          "type": "path_contains",
+          "value": "audio",
+          "case_sensitive": false
+        },
+        {
+          "type": "extension",
+          "values": [
+            ".mp3",
+            ".mp4",
+            ".avi",
+            ".wav"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Uncategorized",
+      "description": "Applications that don't match any rule",
+      "priority": 999,
+      "rules": []
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+"""
+Duplicate Application Manager package.
+"""
