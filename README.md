@@ -55,16 +55,16 @@
 
 ```mermaid
 flowchart TD
-    A[📂 Scan Target Directories] --> B{Shared File Size?}
-    B -- Unique Size --> C[✅ Mark as Non-Duplicate]
-    B -- Identical Size --> D[🔒 Hash File Content via SHA-256]
-    D --> E{Check Database Hash Cache}
-    E -- Cache Hit --> F[Use Cached Hash]
-    E -- Cache Miss --> G[Compute Full/Partial Hash]
-    G --> H[Group Files by Content Hash]
-    H --> I[Assign Category via Priority Rules]
-    I --> J[🖥️ Interactive GUI / CLI Report]
-    J --> K[🗑️ Safe Batch Removal to Trash]
+    A["📂 Scan Target Directories"] --> B{"Shared File Size?"}
+    B -- "Unique Size" --> C["✅ Mark as Non-Duplicate"]
+    B -- "Identical Size" --> D["🔒 Hash File Content via SHA-256"]
+    D --> E{"Check Database Hash Cache"}
+    E -- "Cache Hit" --> F["Use Cached Hash"]
+    E -- "Cache Miss" --> G["Compute Full/Partial Hash"]
+    G --> H["Group Files by Content Hash"]
+    H --> I["Assign Category via Priority Rules"]
+    I --> J["🖥️ Interactive GUI / CLI Report"]
+    J --> K["🗑️ Safe Batch Removal to Trash"]
 ```
 
 ---
