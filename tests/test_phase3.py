@@ -41,8 +41,9 @@ class TestPhase3GUI(unittest.TestCase):
     def test_styles(self):
         qss_dark = get_stylesheet("dark")
         qss_light = get_stylesheet("light")
-        self.assertIn("#121316", qss_dark)
+        self.assertIn("#0B0C10", qss_dark)
         self.assertIn("#F8FAFC", qss_light)
+
 
 
 

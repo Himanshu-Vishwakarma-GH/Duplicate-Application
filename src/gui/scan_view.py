@@ -103,13 +103,19 @@ class ScanView(QWidget):
 
     def _init_ui(self):
         main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(20, 20, 20, 20)
+        main_layout.setContentsMargins(24, 24, 24, 24)
         main_layout.setSpacing(20)
 
-        # Header
-        header = QLabel("Scan Configuration")
-        header.setStyleSheet("font-size: 22px; font-weight: bold;")
-        main_layout.addWidget(header)
+        # Header Title
+        header_v = QVBoxLayout()
+        header_title = QLabel("Scan Configuration")
+        header_title.setObjectName("sectionTitle")
+        header_v.addWidget(header_title)
+
+        header_sub = QLabel("Select scan directories, configure file extension filters, and adjust hashing parameters.")
+        header_sub.setObjectName("sectionSubtitle")
+        header_v.addWidget(header_sub)
+        main_layout.addLayout(header_v)
 
         # Card 1: Scan Directories
         dirs_card = QFrame()
@@ -117,18 +123,19 @@ class ScanView(QWidget):
         dirs_v = QVBoxLayout(dirs_card)
 
         dirs_header = QLabel("Scan Directories")
-        dirs_header.setStyleSheet("font-size: 16px; font-weight: bold;")
+        dirs_header.setStyleSheet("font-size: 15px; font-weight: 700;")
         dirs_v.addWidget(dirs_header)
 
         self.dirs_list = QListWidget()
+        self.dirs_list.setMaximumHeight(140)
         dirs_v.addWidget(self.dirs_list)
 
         dirs_btn_layout = QHBoxLayout()
-        add_dir_btn = QPushButton(f"{ICON_ADD} Add Directory")
+        add_dir_btn = QPushButton(f"{ICON_ADD}  Add Directory")
         add_dir_btn.clicked.connect(self._add_directory)
         dirs_btn_layout.addWidget(add_dir_btn)
 
-        rem_dir_btn = QPushButton(f"{ICON_REMOVE} Remove Selected")
+        rem_dir_btn = QPushButton(f"{ICON_REMOVE}  Remove Selected")
         rem_dir_btn.clicked.connect(self._remove_directory)
         dirs_btn_layout.addWidget(rem_dir_btn)
         dirs_btn_layout.addStretch()
@@ -140,14 +147,14 @@ class ScanView(QWidget):
         filter_card = QFrame()
         filter_card.setObjectName("cardFrame")
         filter_layout = QFormLayout(filter_card)
-        filter_layout.setSpacing(12)
+        filter_layout.setSpacing(14)
 
         filter_header = QLabel("File Filters & Exclusions")
-        filter_header.setStyleSheet("font-size: 16px; font-weight: bold;")
+        filter_header.setStyleSheet("font-size: 15px; font-weight: 700;")
         filter_layout.addRow(filter_header)
 
         self.ext_input = QLineEdit()
-        self.ext_input.setPlaceholderText(".exe, .msi, .app, .dmg")
+        self.ext_input.setPlaceholderText(".exe, .msi, .app, .dmg, .deb, .rpm")
         filter_layout.addRow("File Extensions:", self.ext_input)
 
         self.excl_input = QLineEdit()
@@ -160,16 +167,17 @@ class ScanView(QWidget):
         options_card = QFrame()
         options_card.setObjectName("cardFrame")
         options_v = QVBoxLayout(options_card)
+        options_v.setSpacing(10)
 
         opts_header = QLabel("Scan Options")
-        opts_header.setStyleSheet("font-size: 16px; font-weight: bold;")
+        opts_header.setStyleSheet("font-size: 15px; font-weight: 700;")
         options_v.addWidget(opts_header)
 
         self.chk_cache = QCheckBox("Use cached hashes for faster re-scans")
         self.chk_cache.setChecked(True)
         options_v.addWidget(self.chk_cache)
 
-        self.chk_partial = QCheckBox("Use partial hashing for files > 100 MB")
+        self.chk_partial = QCheckBox("Use partial hashing for large files (> 100 MB)")
         self.chk_partial.setChecked(True)
         options_v.addWidget(self.chk_partial)
 
@@ -179,26 +187,26 @@ class ScanView(QWidget):
 
         main_layout.addWidget(options_card)
 
-        # Progress & Controls Bar
+        # Progress & Control Section
         control_card = QFrame()
         control_card.setObjectName("cardFrame")
         control_v = QVBoxLayout(control_card)
 
         self.progress_bar = QProgressBar()
         self.progress_bar.setValue(0)
-        self.progress_bar.setFixedHeight(20)
+        self.progress_bar.setFixedHeight(24)
         control_v.addWidget(self.progress_bar)
 
         self.status_label = QLabel("Ready to scan.")
-        self.status_label.setStyleSheet("color: #B0B0B0;")
+        self.status_label.setStyleSheet("color: #8A94A6; font-size: 12px;")
         control_v.addWidget(self.status_label)
 
         btn_h = QHBoxLayout()
         btn_h.addStretch()
 
-        self.start_scan_btn = QPushButton(f"{ICON_SCAN} Start Scan Now")
+        self.start_scan_btn = QPushButton(f"{ICON_SCAN}  Start Scan Now")
         self.start_scan_btn.setObjectName("primaryBtn")
-        self.start_scan_btn.setFixedHeight(40)
+        self.start_scan_btn.setFixedHeight(44)
         self.start_scan_btn.clicked.connect(self._start_scan)
         btn_h.addWidget(self.start_scan_btn)
 
@@ -232,7 +240,6 @@ class ScanView(QWidget):
             self.dirs_list.takeItem(self.dirs_list.row(item))
 
     def _start_scan(self):
-        # Collect configuration
         scan_dirs = [self.dirs_list.item(i).text() for i in range(self.dirs_list.count())]
         if not scan_dirs:
             self.status_label.setText("Please add at least one directory to scan.")
@@ -251,19 +258,16 @@ class ScanView(QWidget):
             "rules": self.config_manager.rules.get("categories", []) if self.config_manager else [],
         }
 
-        # Update saved configuration
         if self.config_manager:
             self.config_manager.config["scan_directories"] = scan_dirs
             self.config_manager.config["file_extensions"] = exts
             self.config_manager.config["excluded_directories"] = excls
             self.config_manager.save()
 
-        # UI State
         self.start_scan_btn.setEnabled(False)
         self.progress_bar.setValue(0)
         self.status_label.setText("Starting scan...")
 
-        # Worker Thread
         self.worker = ScanWorker(
             scan_dirs=scan_dirs,
             config=scan_config,

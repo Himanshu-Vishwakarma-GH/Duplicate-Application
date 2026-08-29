@@ -37,13 +37,20 @@ class CategoryView(QWidget):
 
     def _init_ui(self):
         main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(20, 20, 20, 20)
+        main_layout.setContentsMargins(24, 24, 24, 24)
         main_layout.setSpacing(16)
 
-        # Header
-        header = QLabel("Category Browser")
-        header.setStyleSheet("font-size: 22px; font-weight: bold;")
-        main_layout.addWidget(header)
+        # Header Title
+        header_v = QVBoxLayout()
+        header_title = QLabel("Category Browser")
+        header_title.setObjectName("sectionTitle")
+        header_v.addWidget(header_title)
+
+        header_sub = QLabel("Browse software by category, view assigned applications, and modify category rules.")
+        header_sub.setObjectName("sectionSubtitle")
+        header_v.addWidget(header_sub)
+
+        main_layout.addLayout(header_v)
 
         # Splitter layout
         splitter = QSplitter(Qt.Horizontal)
@@ -52,9 +59,10 @@ class CategoryView(QWidget):
         left_card = QFrame()
         left_card.setObjectName("cardFrame")
         left_v = QVBoxLayout(left_card)
+        left_v.setContentsMargins(16, 16, 16, 16)
 
         left_title = QLabel("Categories")
-        left_title.setStyleSheet("font-size: 16px; font-weight: bold;")
+        left_title.setStyleSheet("font-size: 16px; font-weight: 700;")
         left_v.addWidget(left_title)
 
         self.category_list = QListWidget()
@@ -67,15 +75,17 @@ class CategoryView(QWidget):
         right_card = QFrame()
         right_card.setObjectName("cardFrame")
         right_v = QVBoxLayout(right_card)
+        right_v.setContentsMargins(16, 16, 16, 16)
 
         right_header = QHBoxLayout()
         self.cat_header_label = QLabel("Applications")
-        self.cat_header_label.setStyleSheet("font-size: 16px; font-weight: bold;")
+        self.cat_header_label.setStyleSheet("font-size: 16px; font-weight: 700;")
         right_header.addWidget(self.cat_header_label)
         right_header.addStretch()
 
         right_header.addWidget(QLabel("Move to Category:"))
         self.target_cat_combo = QComboBox()
+        self.target_cat_combo.setMinimumWidth(180)
         right_header.addWidget(self.target_cat_combo)
 
         move_btn = QPushButton("Move App")
@@ -91,7 +101,7 @@ class CategoryView(QWidget):
         right_v.addWidget(self.app_table)
 
         splitter.addWidget(right_card)
-        splitter.setSizes([250, 650])
+        splitter.setSizes([260, 700])
 
         main_layout.addWidget(splitter)
 
@@ -104,7 +114,6 @@ class CategoryView(QWidget):
             self.categories = self.db_manager.get_all_categories()
             self.applications = self.db_manager.get_all_applications()
 
-            # Populate Left Category List
             self.category_list.clear()
             self.target_cat_combo.clear()
 
@@ -118,7 +127,7 @@ class CategoryView(QWidget):
                 cid = cat["id"]
                 cname = cat["name"]
                 cnt = cat_counts.get(cid, 0)
-                item_text = f"{cname} ({cnt} apps)"
+                item_text = f"📁 {cname}  ({cnt} apps)"
 
                 item = QListWidgetItem(item_text)
                 item.setData(Qt.UserRole, cid)
@@ -146,7 +155,6 @@ class CategoryView(QWidget):
 
         self.cat_header_label.setText(f"Applications in '{cat_name}'")
 
-        # Filter applications
         cat_apps = [a for a in self.applications if a.get("category_id") == cat_id]
 
         self.app_table.setRowCount(len(cat_apps))

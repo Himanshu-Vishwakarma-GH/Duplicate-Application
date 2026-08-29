@@ -1,6 +1,6 @@
 """
 Main Window module for Duplicate Application Manager.
-Implements the main layout with fixed sidebar navigation, QStackedWidget content pages, and status bar.
+Implements modern layout with sidebar navigation, stacked content views, and status bar.
 """
 
 from typing import Any, Optional
@@ -35,7 +35,7 @@ from src.gui.styles import (
 
 
 class MainWindow(QMainWindow):
-    """Main Application Window with sidebar navigation and stacked content views."""
+    """Main Application Window with navigation sidebar and stacked content views."""
 
     def __init__(self, config_manager: Any = None, db_manager: Any = None, parent: Optional[QWidget] = None):
         super().__init__(parent)
@@ -44,7 +44,7 @@ class MainWindow(QMainWindow):
         self.current_theme = "dark"
 
         self.setWindowTitle("Duplicate Application Manager")
-        self.resize(1200, 800)
+        self.resize(1280, 820)
 
         self._init_ui()
         self._apply_theme(self.current_theme)
@@ -59,27 +59,28 @@ class MainWindow(QMainWindow):
         main_h_layout.setSpacing(0)
 
         # ---------------------------------------------------------------------
-        # Sidebar Frame (200px fixed width)
+        # Sidebar Frame (220px fixed width)
         # ---------------------------------------------------------------------
         sidebar_frame = QFrame()
         sidebar_frame.setObjectName("sidebarFrame")
         sidebar_v_layout = QVBoxLayout(sidebar_frame)
-        sidebar_v_layout.setContentsMargins(0, 16, 0, 16)
-        sidebar_v_layout.setSpacing(8)
+        sidebar_v_layout.setContentsMargins(0, 20, 0, 20)
+        sidebar_v_layout.setSpacing(6)
 
-        # App Title
+        # App Title Header
         app_title = QLabel("⬡ App Manager")
-        app_title.setStyleSheet("font-size: 18px; font-weight: bold; padding: 8px 16px;")
+        app_title.setObjectName("sidebarHeader")
         sidebar_v_layout.addWidget(app_title)
+        sidebar_v_layout.addSpacing(10)
 
         # Navigation Buttons
         self.nav_button_group = QButtonGroup(self)
         self.nav_button_group.setExclusive(True)
 
-        self.btn_dashboard = self._create_sidebar_btn(f"{ICON_DASHBOARD}  Dashboard", 0)
-        self.btn_scan = self._create_sidebar_btn(f"{ICON_SCAN}  Scan Config", 1)
-        self.btn_results = self._create_sidebar_btn(f"{ICON_RESULTS}  Results", 2)
-        self.btn_categories = self._create_sidebar_btn(f"{ICON_CATEGORIES}  Categories", 3)
+        self.btn_dashboard = self._create_sidebar_btn(f"{ICON_DASHBOARD}   Dashboard", 0)
+        self.btn_scan = self._create_sidebar_btn(f"{ICON_SCAN}   Scan Config", 1)
+        self.btn_results = self._create_sidebar_btn(f"{ICON_RESULTS}   Duplicate Results", 2)
+        self.btn_categories = self._create_sidebar_btn(f"{ICON_CATEGORIES}   Categories", 3)
 
         sidebar_v_layout.addWidget(self.btn_dashboard)
         sidebar_v_layout.addWidget(self.btn_scan)
@@ -88,7 +89,7 @@ class MainWindow(QMainWindow):
         sidebar_v_layout.addStretch()
 
         # Theme Toggle Button
-        theme_btn = QPushButton(f"{ICON_SETTINGS}  Toggle Theme")
+        theme_btn = QPushButton(f"{ICON_SETTINGS}   Toggle Theme")
         theme_btn.setObjectName("sidebarBtn")
         theme_btn.clicked.connect(self._toggle_theme)
         sidebar_v_layout.addWidget(theme_btn)
@@ -125,6 +126,7 @@ class MainWindow(QMainWindow):
         self.dashboard_view.request_results.connect(lambda: self._switch_page(2))
         self.scan_view.scan_completed.connect(self._on_scan_completed)
         self.results_view.request_removal.connect(self._on_request_removal)
+        self.results_view.request_rescan.connect(lambda: self._switch_page(1))
 
     def _create_sidebar_btn(self, text: str, page_index: int) -> QPushButton:
         btn = QPushButton(text)
@@ -157,7 +159,7 @@ class MainWindow(QMainWindow):
         try:
             apps = self.db_manager.get_all_applications()
             dupes = self.db_manager.get_duplicates()
-            msg = f"Ready  |  Total Applications: {len(apps)}  |  Duplicates Found: {len(dupes)}"
+            msg = f"Ready  •  Total Applications: {len(apps)}  •  Duplicates Found: {len(dupes)}"
             self.statusbar.showMessage(msg)
         except Exception:
             self.statusbar.showMessage("Ready.")
@@ -178,7 +180,7 @@ class MainWindow(QMainWindow):
         reply = QMessageBox.question(
             self,
             "Confirm Removal",
-            f"Are you sure you want to move {len(file_paths)} selected files to trash?",
+            f"Are you sure you want to move {len(file_paths)} selected file(s) to trash?",
             QMessageBox.Yes | QMessageBox.No,
             QMessageBox.No,
         )
@@ -197,6 +199,6 @@ class MainWindow(QMainWindow):
             QMessageBox.information(
                 self,
                 "Removal Complete",
-                f"Successfully moved {removed_count} of {len(file_paths)} files to trash.",
+                f"Successfully moved {removed_count} of {len(file_paths)} file(s) to trash.",
             )
             self._on_scan_completed()
