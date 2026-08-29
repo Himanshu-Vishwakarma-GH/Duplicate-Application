@@ -31,17 +31,26 @@ data/*.db
 data/*.db-wal
 data/*.db-shm
 data/*.db-journal
+data/*.json
+!data/.gitkeep
 
 # Logs
 logs/*.log
 logs/*.txt
+!logs/.gitkeep
 
-# IDEs
+# Internal Development Docs
+PLAN.md
+memory.md
+prd.md
+architecture.md
+design.md
+phases.md
+
+# IDEs & System
 .idea/
 .vscode/
 *.swp
 *.swo
-
-# OS files
 .DS_Store
 Thumbs.db
