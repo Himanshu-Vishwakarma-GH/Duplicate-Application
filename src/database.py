@@ -364,3 +364,18 @@ class DatabaseManager:
         with self.get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute(sql)
+
+    def clear_all_scan_data(self, clear_cache: bool = False) -> None:
+        """
+        Clear all application records, duplicate groups, and optionally hash cache from the database.
+        
+        Args:
+            clear_cache: If True, also clears the hash_cache table.
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM applications;")
+            cursor.execute("DELETE FROM duplicate_groups;")
+            if clear_cache:
+                cursor.execute("DELETE FROM hash_cache;")
+

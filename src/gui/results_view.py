@@ -14,12 +14,14 @@ from PySide6.QtWidgets import (
     QHeaderView,
     QLabel,
     QLineEdit,
+    QMessageBox,
     QPushButton,
     QTreeWidgetItem,
     QTreeWidget,
     QVBoxLayout,
     QWidget,
 )
+
 
 import src.duplicate_detector as duplicate_detector
 from src.gui.styles import ICON_REFRESH, ICON_TRASH
@@ -56,7 +58,13 @@ class ResultsView(QWidget):
         refresh_btn.clicked.connect(self.refresh_results)
         header_layout.addWidget(refresh_btn)
 
+        clear_btn = QPushButton(f"{ICON_TRASH} Clear Scan History")
+        clear_btn.setObjectName("dangerBtn")
+        clear_btn.clicked.connect(self._on_clear_scans_clicked)
+        header_layout.addWidget(clear_btn)
+
         main_layout.addLayout(header_layout)
+
 
         # Search and Sort Bar
         filter_card = QFrame()
@@ -229,3 +237,30 @@ class ResultsView(QWidget):
 
         if selected_paths:
             self.request_removal.emit(selected_paths)
+
+    def _on_clear_scans_clicked(self):
+        """Prompt confirmation and clear all scan data from the database."""
+        if not self.db_manager:
+            return
+
+        reply = QMessageBox.question(
+            self,
+            "Clear Scan History",
+            "Are you sure you want to clear all previous scan results from the database?\n\n(This will not delete any files on disk, only the database records).",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+
+        if reply == QMessageBox.Yes:
+            try:
+                self.db_manager.clear_all_scan_data(clear_cache=False)
+                self.refresh_results()
+                self.request_rescan.emit()
+                QMessageBox.information(
+                    self,
+                    "Scan History Cleared",
+                    "All previous scan results have been successfully cleared from the database.",
+                )
+            except Exception as e:
+                QMessageBox.warning(self, "Error", f"Failed to clear scan results: {e}")
+

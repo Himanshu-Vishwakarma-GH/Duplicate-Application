@@ -48,8 +48,12 @@ class ScanWorker(QThread):
 
     def run(self):
         try:
+            if self.db_manager:
+                self.db_manager.clear_all_scan_data(clear_cache=False)
+
             self.progress_updated.emit(5, "Scanning directories...")
             all_files: List[Dict[str, Any]] = []
+
 
             total_dirs = len(self.scan_dirs)
             for idx, dpath in enumerate(self.scan_dirs):

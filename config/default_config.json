@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "scan_directories": [
-    "C:/Users/Himanshu/Downloads"
+    "C:/Users/Himanshu/OneDrive/Desktop/Browsr test"
   ],
   "excluded_directories": [
     "node_modules",
